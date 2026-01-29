@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDb = require('./config/db');
 const authRoutes = require('./routes/auth');
+const productRoutes = require('./routes/products');
 
 // Load environment variables
 dotenv.config();
@@ -49,6 +50,7 @@ app.get('/api/db-test', async (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -71,10 +73,10 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-    console.log(`📦 Environment: ${process.env.NODE_ENV}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error('❌ Unhandled Rejection:', err.message);
+  console.error('Unhandled Rejection:', err.message);
   process.exit(1);
 });
