@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const connectDb = require('./config/db');
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
 
 // Load environment variables
 dotenv.config();
@@ -51,7 +52,7 @@ app.get('/api/db-test', async (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
-
+app.use('/api/orders', orderRoutes);
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 
