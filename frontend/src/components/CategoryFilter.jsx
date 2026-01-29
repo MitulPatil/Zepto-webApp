@@ -11,8 +11,8 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange }) => {
             onClick={() => onCategoryChange(category)}
             className={`px-4 py-2 rounded-full font-medium transition ${
               selectedCategory === category
-                ? 'bg-zepto-orange text-white'
-                : 'bg-white text-gray-700 hover:bg-orange-50 border border-gray-300'
+                ? 'bg-purple-900 text-white shadow-md transform scale-105'
+                : 'bg-white text-gray-700 hover:bg-purple-50 border border-gray-300 hover:border-purple-300'
             }`}
           >
             {category}

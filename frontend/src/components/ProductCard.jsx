@@ -45,7 +45,7 @@ const ProductCard = ({ product }) => {
         {/* Price */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <span className="text-xl font-bold text-zepto-orange">
+            <span className="text-xl font-bold text-purple-900">
               ₹{product.price}
             </span>
             {product.discount > 0 && (
@@ -63,15 +63,15 @@ const ProductCard = ({ product }) => {
         {!isInCart(product._id) ? (
           <button
             onClick={handleAddToCart}
-            className="w-full bg-zepto-orange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
+            className="w-full bg-purple-900 text-white py-2 rounded-lg font-semibold hover:bg-purple-800 transition"
           >
             Add to Cart
           </button>
         ) : (
-          <div className="flex items-center justify-between border-2 border-zepto-orange rounded-lg">
+          <div className="flex items-center justify-between border-2 border-purple-900 rounded-lg">
             <button
               onClick={handleDecrement}
-              className="px-4 py-2 text-zepto-orange font-bold hover:bg-orange-50 transition"
+              className="px-4 py-2 text-purple-900 font-bold hover:bg-purple-50 transition"
             >
               -
             </button>
@@ -80,7 +80,7 @@ const ProductCard = ({ product }) => {
             </span>
             <button
               onClick={handleIncrement}
-              className="px-4 py-2 text-zepto-orange font-bold hover:bg-orange-50 transition"
+              className="px-4 py-2 text-purple-900 font-bold hover:bg-purple-50 transition"
             >
               +
             </button>

@@ -14,7 +14,7 @@ const PriceSlider = ({ minPrice, maxPrice, onPriceChange }) => {
             max="500"
             value={minPrice}
             onChange={(e) => onPriceChange(Number(e.target.value), maxPrice)}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-zepto-orange"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-900"
           />
         </div>
 
@@ -29,7 +29,7 @@ const PriceSlider = ({ minPrice, maxPrice, onPriceChange }) => {
             max="500"
             value={maxPrice}
             onChange={(e) => onPriceChange(minPrice, Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-zepto-orange"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-900"
           />
         </div>
 

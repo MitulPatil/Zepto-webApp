@@ -1,15 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { login as loginApi } from '../services/authApi';
 import { toast } from 'react-toastify';
 
-const Login = () => {
+const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,26 +29,48 @@ const Login = () => {
           isAdmin: response.data.isAdmin
         };
         login(userData, response.data.token);
-        navigate('/');
+        toast.success(`Welcome back, ${userData.name}!`);
+        onClose();
+        setPhone('');
+        setPassword('');
       } else {
         toast.error(response.message || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Invalid credentials');
+      // Check if user not found
+      if (error.message && error.message.includes('not found')) {
+        toast.error('Signup before login');
+        onClose();
+        onSwitchToRegister();
+      } else {
+        toast.error(error.message || 'Invalid credentials');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden border border-gray-100">
-        <div className="bg-purple-900 p-8 text-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200">
+        {/* Header */}
+        <div className="bg-purple-900 p-8 text-center relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
           <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
           <p className="text-purple-200">Login to access your account</p>
         </div>
         
+        {/* Form */}
         <div className="p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -102,9 +122,15 @@ const Login = () => {
           <div className="mt-8 text-center text-sm text-gray-600">
             <p>
               Don't have an account?{' '}
-              <Link to="/register" className="text-purple-900 font-bold hover:underline">
+              <button
+                onClick={() => {
+                  onClose();
+                  onSwitchToRegister();
+                }}
+                className="text-purple-900 font-bold hover:underline"
+              >
                 Create Account
-              </Link>
+              </button>
             </p>
           </div>
         </div>
@@ -113,4 +139,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginModal;

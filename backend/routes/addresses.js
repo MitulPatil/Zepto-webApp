@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 
-// Valid pincodes for Zepto delivery (Mumbai areas)
+// Valid pincodes for Zepto delivery
 const VALID_PINCODES = [
   '400001', '400002', '400003', '400004', '400005',
   '400006', '400007', '400008', '400009', '400010',
