@@ -6,6 +6,8 @@ const connectDb = require('./config/db');
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
+const addressRoutes = require('./routes/addresses');
+const paymentRoutes = require('./routes/payments');
 
 // Load environment variables
 dotenv.config();
@@ -53,6 +55,8 @@ app.get('/api/db-test', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/addresses', addressRoutes);
+app.use('/api/payments', paymentRoutes);
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 
