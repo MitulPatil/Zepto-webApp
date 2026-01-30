@@ -2,15 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+
+// Load environment variables FIRST before requiring any other modules
+dotenv.config();
+
 const connectDb = require('./config/db');
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const addressRoutes = require('./routes/addresses');
 const paymentRoutes = require('./routes/payments');
-
-// Load environment variables
-dotenv.config();
 
 // Initialize Express app
 const app = express();

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { createOrder } from '../services/orderApi';
+import { createPayment, verifyPayment } from '../services/paymentApi';
 import { getProfile, addAddress } from '../services/authApi';
 import { toast } from 'react-toastify';
 
@@ -27,6 +28,18 @@ const Checkout = () => {
   const total = getCartTotal();
   const deliveryFee = total > 499 ? 0 : 35;
   const grandTotal = total + deliveryFee;
+
+  // Load Razorpay script on component mount
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   useEffect(() => {
     fetchSavedAddresses();
@@ -107,30 +120,127 @@ const Checkout = () => {
         }
       }
 
-      const orderData = {
-        items: cartItems.map(item => ({
-          product: item.product,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image
-        })),
-        deliveryAddress,
-        totalAmount: grandTotal,
-        paymentMethod: 'Razorpay'
+      // Create Razorpay payment order
+      const paymentResponse = await createPayment(grandTotal);
+      
+      if (!paymentResponse.success) {
+        throw new Error('Failed to create payment order');
+      }
+
+      const { orderId, amount, keyId } = paymentResponse.data;
+
+      // Razorpay payment options
+      const options = {
+        key: keyId, // Test key from backend
+        amount: amount * 100, // Amount in paise
+        currency: 'INR',
+        name: 'Zepto Clone',
+        description: 'Grocery Order Payment',
+        image: 'https://cdn-icons-png.flaticon.com/512/2331/2331966.png', // Optional logo
+        order_id: orderId,
+        config: {
+          display: {
+            blocks: {
+              utib: { // UPI block
+                name: 'Pay using UPI',
+                instruments: [
+                  {
+                    method: 'upi'
+                  }
+                ]
+              },
+              card: { // Cards block
+                name: 'Pay with Cards',
+                instruments: [
+                  {
+                    method: 'card'
+                  }
+                ]
+              },
+              other: { // Other methods
+                name: 'Other Payment Methods',
+                instruments: [
+                  {
+                    method: 'netbanking'
+                  },
+                  {
+                    method: 'wallet'
+                  }
+                ]
+              }
+            },
+            sequence: ['block.utib', 'block.card', 'block.other'],
+            preferences: {
+              show_default_blocks: true
+            }
+          }
+        },
+        handler: async function (response) {
+          try {
+            // Verify payment
+            const verifyResponse = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+
+            if (verifyResponse.success && verifyResponse.verified) {
+              // Create order in database
+              const orderData = {
+                items: cartItems.map(item => ({
+                  product: item.product,
+                  name: item.name,
+                  price: item.price,
+                  quantity: item.quantity,
+                  image: item.image
+                })),
+                deliveryAddress,
+                totalAmount: grandTotal,
+                paymentMethod: 'Razorpay',
+                paymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id
+              };
+
+              const orderResponse = await createOrder(orderData);
+              
+              if (orderResponse.success) {
+                toast.success('Payment successful! Order placed.');
+                clearCart();
+                navigate(`/order-success/${orderResponse.data._id}`);
+              }
+            } else {
+              toast.error('Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Order creation error:', error);
+            toast.error('Payment successful but order creation failed. Contact support.');
+          } finally {
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: user?.name || 'Customer',
+          email: user?.email || '',
+          contact: deliveryAddress.phone || ''
+        },
+        theme: {
+          color: '#059669' // Emerald color to match theme
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+            toast.info('Payment cancelled');
+          }
+        }
       };
 
-      const response = await createOrder(orderData);
-      
-      if (response.success) {
-        toast.success('Order placed successfully!');
-        clearCart();
-        navigate(`/order-success/${response.data._id}`);
-      }
+      // Load Razorpay script and open payment modal
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error(error.message || 'Failed to place order');
-    } finally {
+      toast.error(error.message || 'Failed to initiate payment');
       setLoading(false);
     }
   };
@@ -311,20 +421,32 @@ const Checkout = () => {
           {/* Payment Method - Mock */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mt-6">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-800">
-              <span className="bg-purple-100 text-purple-900 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
+              <span className="bg-emerald-100 text-emerald-900 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
               Payment Method
             </h2>
-            <div className="p-4 border border-purple-200 bg-purple-50 rounded-xl flex items-center gap-3">
-              <input type="radio" checked readOnly className="w-5 h-5 text-purple-900 accent-purple-900" />
-              <span className="font-semibold text-gray-800">Cash on Delivery / UPI</span>
+            <div className="p-4 border border-emerald-200 bg-emerald-50 rounded-xl flex items-center gap-3">
+              <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <div>
+                <span className="font-semibold text-gray-800 block">Razorpay Payment Gateway</span>
+                <span className="text-xs text-gray-500">Secure payment via UPI, Cards, Net Banking & Wallets</span>
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mt-2 ml-1">Simple payment for demo purposes.</p>
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-2">
+              <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-xs text-blue-700">
+                <strong>Test Mode Active:</strong> Use test card: 4111 1111 1111 1111 | CVV: Any 3 digits | Expiry: Any future date
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Order Summary */}
         <div className="lg:w-1/3">
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-purple-100 sticky top-24">
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-emerald-100 sticky top-24">
             <h3 className="font-bold text-xl mb-6 text-gray-800">Order Summary</h3>
             
             <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
@@ -359,7 +481,7 @@ const Checkout = () => {
               type="submit"
               form="checkout-form"
               disabled={loading || (!selectedAddressId && !showNewAddressForm)}
-              className="w-full bg-purple-900 text-white font-bold py-4 rounded-xl hover:bg-purple-800 transition-all shadow-md transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-4 rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Processing...' : `Pay ₹${grandTotal}`}
             </button>
