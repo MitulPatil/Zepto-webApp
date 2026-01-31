@@ -131,7 +131,7 @@ const Home = () => {
           />
 
           {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8" style={{height: 'calc(100vh - 180px)'}}>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:h-[calc(100vh-180px)]">
             {/* Sidebar - Price Filter (Fixed/Sticky) */}
             <div className="lg:col-span-1">
               <div className="lg:sticky lg:top-4 space-y-4">
@@ -184,7 +184,7 @@ const Home = () => {
             </div>
 
             {/* Products Grid */}
-            <div className="lg:col-span-3 overflow-y-auto pr-2 hide-scrollbar" style={{maxHeight: '100%'}}>
+            <div className="lg:col-span-3 lg:overflow-y-auto pr-2 hide-scrollbar" style={{maxHeight: '100%'}}>
               {/* Loading State */}
               {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
