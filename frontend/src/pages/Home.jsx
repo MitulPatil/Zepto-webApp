@@ -131,58 +131,60 @@ const Home = () => {
           />
 
           {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar - Price Filter */}
-            <div className="lg:col-span-1 space-y-4">
-              <div className="bg-white rounded-2xl shadow-lg p-6 border border-emerald-100 hover:shadow-xl transition-shadow duration-300">
-                <PriceSlider
-                  minPrice={minPrice}
-                  maxPrice={maxPrice}
-                  onPriceChange={handlePriceChange}
-                />
-              </div>
-
-              {/* Clear Filters Button */}
-              <button
-                onClick={clearFilters}
-                className="w-full bg-gradient-to-r from-slate-50 to-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:from-slate-100 hover:to-gray-200 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-gray-200"
-              >
-                ✨ Clear All Filters
-              </button>
-
-              {/* Active Filters Display */}
-              {(searchTerm || selectedCategory !== 'All' || minPrice > 0 || maxPrice < 500) && (
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-lg p-5 border border-emerald-200 animate-fade-in">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
-                    <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wide">Active Filters</h4>
-                  </div>
-                  <div className="space-y-2">
-                    {searchTerm && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700 bg-white/60 px-3 py-2 rounded-lg">
-                        <span>🔍</span>
-                        <span className="font-medium truncate">"{searchTerm}"</span>
-                      </div>
-                    )}
-                    {selectedCategory !== 'All' && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700 bg-white/60 px-3 py-2 rounded-lg">
-                        <span>📂</span>
-                        <span className="font-medium">{selectedCategory}</span>
-                      </div>
-                    )}
-                    {(minPrice > 0 || maxPrice < 500) && (
-                      <div className="flex items-center gap-2 text-sm text-gray-700 bg-white/60 px-3 py-2 rounded-lg">
-                        <span>💰</span>
-                        <span className="font-medium">₹{minPrice} - ₹{maxPrice}</span>
-                      </div>
-                    )}
-                  </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8" style={{height: 'calc(100vh - 180px)'}}>
+            {/* Sidebar - Price Filter (Fixed/Sticky) */}
+            <div className="lg:col-span-1">
+              <div className="lg:sticky lg:top-4 space-y-4">
+                <div className="bg-white rounded-2xl shadow-lg p-6 border border-emerald-100 hover:shadow-xl transition-shadow duration-300">
+                  <PriceSlider
+                    minPrice={minPrice}
+                    maxPrice={maxPrice}
+                    onPriceChange={handlePriceChange}
+                  />
                 </div>
-              )}
+
+                {/* Clear Filters Button */}
+                <button
+                  onClick={clearFilters}
+                  className="w-full bg-gradient-to-r from-slate-50 to-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:from-slate-100 hover:to-gray-200 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-gray-200"
+                >
+                  ✨ Clear All Filters
+                </button>
+
+                {/* Active Filters Display */}
+                {(searchTerm || selectedCategory !== 'All' || minPrice > 0 || maxPrice < 500) && (
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-lg p-5 border border-emerald-200 animate-fade-in">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
+                      <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wide">Active Filters</h4>
+                    </div>
+                    <div className="space-y-2">
+                      {searchTerm && (
+                        <div className="flex items-center gap-2 text-sm text-gray-700 bg-white/60 px-3 py-2 rounded-lg">
+                          <span>🔍</span>
+                          <span className="font-medium truncate">"{searchTerm}"</span>
+                        </div>
+                      )}
+                      {selectedCategory !== 'All' && (
+                        <div className="flex items-center gap-2 text-sm text-gray-700 bg-white/60 px-3 py-2 rounded-lg">
+                          <span>📂</span>
+                          <span className="font-medium">{selectedCategory}</span>
+                        </div>
+                      )}
+                      {(minPrice > 0 || maxPrice < 500) && (
+                        <div className="flex items-center gap-2 text-sm text-gray-700 bg-white/60 px-3 py-2 rounded-lg">
+                          <span>💰</span>
+                          <span className="font-medium">₹{minPrice} - ₹{maxPrice}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Products Grid */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 overflow-y-auto pr-2 hide-scrollbar" style={{maxHeight: '100%'}}>
               {/* Loading State */}
               {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
