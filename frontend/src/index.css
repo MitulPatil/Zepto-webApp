@@ -1,17 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --text: #18222c;
+  --muted: #64748b;
+  --brand: #0f766e;
+  --brand-dark: #115e59;
+  --border: #d9e2ec;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f8f9fa;
-  color: #1f2937;
+  background: radial-gradient(circle at top right, #e6f4f1 0%, var(--bg) 40%);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -22,16 +30,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #edf2f7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #b9c4d0;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #93a3b8;
 }
 
 /* Utilities */

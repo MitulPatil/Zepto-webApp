@@ -4,3 +4,4 @@ export * from './productApi';
 export * from './orderApi';
 export * from './addressApi';
 export * from './paymentApi';
+export * from './adminApi';

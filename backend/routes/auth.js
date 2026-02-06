@@ -16,7 +16,7 @@ const generateToken = (id) => {
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
-    const { name, phone, password } = req.body;
+    const { name, phone, password, isAdmin } = req.body;
 
     // Validation
     if (!name || !phone || !password) {
@@ -39,7 +39,8 @@ router.post('/register', async (req, res) => {
     const user = await User.create({
       name,
       phone,
-      password
+      password,
+      isAdmin: Boolean(isAdmin)
     });
 
     // Generate token

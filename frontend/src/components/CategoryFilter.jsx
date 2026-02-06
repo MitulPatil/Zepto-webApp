@@ -3,16 +3,16 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange }) => {
 
   return (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">Categories</h3>
+      <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-600">Categories</h3>
       <div className="flex flex-wrap gap-2">
         {allCategories.map((category) => (
           <button
             key={category}
             onClick={() => onCategoryChange(category)}
-            className={`px-4 py-2 rounded-full font-medium transition ${
+            className={`rounded-lg border px-3 py-2 text-sm font-semibold transition ${
               selectedCategory === category
-                ? 'bg-purple-900 text-white shadow-md transform scale-105'
-                : 'bg-white text-gray-700 hover:bg-purple-50 border border-gray-300 hover:border-purple-300'
+                ? 'border-teal-700 bg-teal-700 text-white'
+                : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50'
             }`}
           >
             {category}

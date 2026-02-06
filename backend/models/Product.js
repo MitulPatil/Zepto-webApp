@@ -30,6 +30,11 @@ const productSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
+  lowStockThreshold: {
+    type: Number,
+    default: 5,
+    min: 0
+  },
   unit: {
     type: String,
     default: 'piece',
@@ -46,10 +51,18 @@ const productSchema = new mongoose.Schema({
     default: true
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
 // Create index for search
 productSchema.index({ name: 'text', description: 'text' });
+
+productSchema.virtual('stockStatus').get(function () {
+  if (this.stock <= 0) return 'out_of_stock';
+  if (this.stock <= this.lowStockThreshold) return 'low_stock';
+  return 'in_stock';
+});
 
 module.exports = mongoose.model('Product', productSchema);

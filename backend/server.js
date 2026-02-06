@@ -12,6 +12,7 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const addressRoutes = require('./routes/addresses');
 const paymentRoutes = require('./routes/payments');
+const adminRoutes = require('./routes/admin');
 
 // Initialize Express app
 const app = express();
@@ -58,6 +59,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 

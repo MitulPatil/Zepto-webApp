@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { register as registerApi } from '../services/authApi';
 import { toast } from 'react-toastify';
@@ -8,10 +9,12 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     name: '',
     phone: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    isAdmin: false
   });
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -30,7 +33,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
         return;
       }
 
-      const response = await registerApi(formData.name, formData.phone, formData.password);
+      const isAdminRegistration = Boolean(formData.isAdmin);
+      const response = await registerApi(formData.name, formData.phone, formData.password, isAdminRegistration);
       
       if (response.success) {
         toast.success('Registration successful!');
@@ -44,11 +48,13 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           };
           login(userData, response.data.token);
           onClose();
+          navigate(userData.isAdmin ? '/admin' : '/profile');
           setFormData({
             name: '',
             phone: '',
             password: '',
-            confirmPassword: ''
+            confirmPassword: '',
+            isAdmin: false
           });
         }
       } else {
@@ -66,9 +72,9 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="bg-purple-900 p-8 text-center relative">
+        <div className="relative bg-slate-900 p-7 text-center">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
@@ -77,15 +83,15 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
-          <p className="text-purple-200">Sign up to start shopping</p>
+          <h2 className="mb-1 text-2xl font-extrabold text-white">Create account</h2>
+          <p className="text-sm text-slate-300">Sign up to start shopping</p>
         </div>
         
         {/* Form */}
-        <div className="p-8">
+        <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">
+              <label className="mb-2 ml-1 block text-sm font-bold text-slate-700">
                 Full Name
               </label>
               <input
@@ -93,14 +99,25 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 focus:border-teal-700 focus:bg-white focus:outline-none"
                 placeholder="Enter your full name"
                 required
               />
             </div>
+
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <input
+                type="checkbox"
+                name="isAdmin"
+                checked={formData.isAdmin}
+                onChange={(e) => setFormData({ ...formData, isAdmin: e.target.checked })}
+                className="h-4 w-4"
+              />
+              <span className="text-sm font-semibold text-slate-700">Sign up as Admin</span>
+            </label>
             
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">
+              <label className="mb-2 ml-1 block text-sm font-bold text-slate-700">
                 Phone Number
               </label>
               <input
@@ -108,7 +125,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 focus:border-teal-700 focus:bg-white focus:outline-none"
                 placeholder="Ex. 9876543210"
                 maxLength={10}
                 required
@@ -116,7 +133,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             </div>
 
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">
+              <label className="mb-2 ml-1 block text-sm font-bold text-slate-700">
                 Password
               </label>
               <input
@@ -124,7 +141,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 focus:border-teal-700 focus:bg-white focus:outline-none"
                 placeholder="Create a password"
                 required
                 minLength={6}
@@ -132,7 +149,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             </div>
 
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">
+              <label className="mb-2 ml-1 block text-sm font-bold text-slate-700">
                 Confirm Password
               </label>
               <input
@@ -140,7 +157,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 focus:border-teal-700 focus:bg-white focus:outline-none"
                 placeholder="Confirm your password"
                 required
               />
@@ -149,7 +166,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-900 text-white font-bold py-3.5 rounded-xl hover:bg-purple-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full rounded-lg bg-teal-700 py-3 font-bold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -165,7 +182,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             </button>
           </form>
 
-          <div className="mt-8 text-center text-sm text-gray-600">
+          <div className="mt-6 text-center text-sm text-slate-600">
             <p>
               Already have an account?{' '}
               <button
@@ -173,7 +190,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   onClose();
                   onSwitchToLogin();
                 }}
-                className="text-purple-900 font-bold hover:underline"
+                className="font-bold text-teal-700 hover:underline"
               >
                 Login
               </button>

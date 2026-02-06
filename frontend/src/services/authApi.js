@@ -1,12 +1,13 @@
 import api from './api';
 
 // Register new user
-export const register = async (name, phone, password) => {
+export const register = async (name, phone, password, isAdmin = false) => {
   try {
     const response = await api.post('/auth/register', {
       name,
       phone,
-      password
+      password,
+      isAdmin
     });
     return response.data;
   } catch (error) {

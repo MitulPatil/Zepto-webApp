@@ -1,41 +1,34 @@
 const PriceSlider = ({ minPrice, maxPrice, onPriceChange }) => {
   return (
-    <div className="mb-6 bg-white p-4 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">Price Range</h3>
+    <div>
+      <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-600">Price Range</h3>
       <div className="space-y-4">
-        {/* Min Price */}
         <div>
-          <label className="block text-sm text-gray-600 mb-1">
-            Min Price: ₹{minPrice}
-          </label>
+          <label className="mb-1 block text-sm text-slate-600">Min Price: Rs {minPrice}</label>
           <input
             type="range"
             min="0"
             max="500"
             value={minPrice}
             onChange={(e) => onPriceChange(Number(e.target.value), maxPrice)}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-900"
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-teal-700"
           />
         </div>
 
-        {/* Max Price */}
         <div>
-          <label className="block text-sm text-gray-600 mb-1">
-            Max Price: ₹{maxPrice}
-          </label>
+          <label className="mb-1 block text-sm text-slate-600">Max Price: Rs {maxPrice}</label>
           <input
             type="range"
             min="0"
             max="500"
             value={maxPrice}
             onChange={(e) => onPriceChange(minPrice, Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-900"
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-teal-700"
           />
         </div>
 
-        {/* Display Range */}
-        <div className="text-center text-sm text-gray-600">
-          ₹{minPrice} - ₹{maxPrice}
+        <div className="rounded-lg bg-slate-100 py-2 text-center text-sm font-semibold text-slate-700">
+          Rs {minPrice} - Rs {maxPrice}
         </div>
       </div>
     </div>

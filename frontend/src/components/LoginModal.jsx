@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { login as loginApi } from '../services/authApi';
 import { toast } from 'react-toastify';
@@ -8,6 +9,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,8 +31,8 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           isAdmin: response.data.isAdmin
         };
         login(userData, response.data.token);
-        toast.success(`Welcome back, ${userData.name}!`);
         onClose();
+        navigate(userData.isAdmin ? '/admin' : '/profile');
         setPhone('');
         setPassword('');
       } else {
@@ -55,9 +57,9 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="bg-purple-900 p-8 text-center relative">
+        <div className="relative bg-slate-900 p-7 text-center">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
@@ -66,36 +68,36 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-          <p className="text-purple-200">Login to access your account</p>
+          <h2 className="mb-1 text-2xl font-extrabold text-white">Welcome back</h2>
+          <p className="text-sm text-slate-300">Login to continue</p>
         </div>
         
         {/* Form */}
-        <div className="p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">
+              <label className="mb-2 ml-1 block text-sm font-bold text-slate-700">
                 Phone Number
               </label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 focus:border-teal-700 focus:bg-white focus:outline-none"
                 placeholder="Ex. 9876543210"
                 maxLength={10}
               />
             </div>
             
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">
+              <label className="mb-2 ml-1 block text-sm font-bold text-slate-700">
                 Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 focus:border-teal-700 focus:bg-white focus:outline-none"
                 placeholder="Enter your password"
               />
             </div>
@@ -103,7 +105,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-900 text-white font-bold py-3.5 rounded-xl hover:bg-purple-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full rounded-lg bg-teal-700 py-3 font-bold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -119,7 +121,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             </button>
           </form>
 
-          <div className="mt-8 text-center text-sm text-gray-600">
+          <div className="mt-6 text-center text-sm text-slate-600">
             <p>
               Don't have an account?{' '}
               <button
@@ -127,7 +129,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                   onClose();
                   onSwitchToRegister();
                 }}
-                className="text-purple-900 font-bold hover:underline"
+                className="font-bold text-teal-700 hover:underline"
               >
                 Create Account
               </button>
